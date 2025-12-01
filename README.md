@@ -1,19 +1,73 @@
-# Dashboard de Monitoramento de Ambiente
+📌 Guia de Configuração de Hardware e Sensores
 
-Este projeto consiste em um dashboard simples para visualizar dados de temperatura e umidade de um canal do ThingSpeak, utilizando Python e a biblioteca Dash.
+Este guia detalha como conectar os sensores DHT22 (Temperatura e Umidade) e LDR (Luminosidade) ao seu microcontrolador ESP8266 para que o código de envio de dados para o ThingSpeak funcione corretamente.
 
-## Pré-requisitos
-Certifique-se de ter o Python instalado. As bibliotecas necessárias estão listadas no arquivo `requirements.txt`. Você pode instalá-las com o seguinte comando:
+⚠️ Pré-requisitos de Fiação
 
-```pip install -r requirements.txt```
+Certifique-se de que os sensores estejam conectados em uma protoboard (breadboard) ou placa de circuito impresso e que todos os componentes estejam devidamente aterrados e alimentados.
 
-## Configuração
-1.  Substitua `SUA_ID_DO_CANAL` e `SUA_CHAVE_DE_LEITURA` no arquivo `dashboard_thingspeak.py` pelas suas próprias credenciais do ThingSpeak.
-2.  Certifique-se de que seu canal do ThingSpeak esteja enviando dados de umidade (campo 1) e temperatura (campo 2).
+1. Conexão do Sensor DHT22
 
-## Como Rodar
-Execute o script Python a partir da linha de comando:
+O DHT22 é um sensor digital. Seu pino de dados deve ser conectado a uma das portas digitais do ESP8266.
 
-```python dashboard_thingspeak.py```
+2. Conexão do Sensor LDR
 
-O dashboard estará disponível em `http://127.0.0.1:8050/` no seu navegador.
+O Sensor de Luminosidade LDR é analógico e requer um resistor pull-down ou divisor de tensão (geralmente um resistor de $10\text{k}\Omega$) para funcionar corretamente. O pino de sinal deve ser conectado à única porta analógica do ESP8266 (A0).
+
+🔌 Diagrama de Conexão Lógica
+
+Para que o código funcione com as definições padrão, siga a tabela abaixo.
+
+Componente
+
+Pino do Sensor
+
+Pino do ESP8266
+
+Função/Observações
+
+Configuração no Código
+
+DHT22
+
+Dados (Data)
+
+D2 (GPIO4)
+
+Leitura Digital de T/U
+
+#define DHTPIN D2
+
+LDR
+
+Sinal Analógico (Resistor Divisor)
+
+A0 (Analógico)
+
+Leitura Analógica de Luminosidade ($0-1023$)
+
+#define LDRPIN A0
+
+Ambos
+
+VCC
+
+3.3V
+
+Alimentação Elétrica
+
+
+
+Ambos
+
+GND
+
+GND
+
+Aterramento
+
+
+
+📝 Observação Importante
+
+O pino D2 no ESP8266 corresponde ao GPIO4 no chip. As bibliotecas modernas do Arduino IDE para ESP8266 permitem que você use a notação D2 diretamente no código, como está definido em thingspeak_uploader.ino.
