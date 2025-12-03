@@ -1,73 +1,76 @@
-📌 Guia de Configuração de Hardware e Sensores
+# 🌡️ Monitoramento de Temperatura e Luminosidade (IoT)
 
-Este guia detalha como conectar os sensores DHT22 (Temperatura e Umidade) e LDR (Luminosidade) ao seu microcontrolador ESP8266 para que o código de envio de dados para o ThingSpeak funcione corretamente.
+Este projeto utiliza um **ESP32 DevKit V1** para coletar dados de **temperatura (DHT22)** e **luminosidade (LDR)**, enviando tudo automaticamente para a plataforma **ThingSpeak**, onde é possível visualizar gráficos e analisar os dados em tempo real.
 
-⚠️ Pré-requisitos de Fiação
+------------------------------------------------------------
 
-Certifique-se de que os sensores estejam conectados em uma protoboard (breadboard) ou placa de circuito impresso e que todos os componentes estejam devidamente aterrados e alimentados.
+## 🎯 Objetivo
 
-1. Conexão do Sensor DHT22
+Criar um sistema IoT simples e funcional que:
 
-O DHT22 é um sensor digital. Seu pino de dados deve ser conectado a uma das portas digitais do ESP8266.
+- Leia **temperatura** através do sensor **DHT22**
+- Leia **luminosidade** através de um sensor **LDR**
+- Envie os dados periodicamente para um canal **ThingSpeak**
+- Permita monitoramento remoto e histórico dos valores coletados
 
-2. Conexão do Sensor LDR
+------------------------------------------------------------
 
-O Sensor de Luminosidade LDR é analógico e requer um resistor pull-down ou divisor de tensão (geralmente um resistor de $10\text{k}\Omega$) para funcionar corretamente. O pino de sinal deve ser conectado à única porta analógica do ESP8266 (A0).
+## 💻 Hardware Utilizado
 
-🔌 Diagrama de Conexão Lógica
+| Componente | Função |
+|-----------|--------|
+| **ESP32 DevKit V1** | Microcontrolador Wi-Fi |
+| **DHT22** | Sensor de temperatura |
+| **Sensor LDR** | Medição de luminosidade |
+| **Resistor** | Divisor de tensão para o LDR |
+| **Jumpers** | Conexões gerais |
 
-Para que o código funcione com as definições padrão, siga a tabela abaixo.
+------------------------------------------------------------
 
-Componente
+## 🛠️ Configuração e Instalação
 
-Pino do Sensor
+### 1. Arduino IDE
 
-Pino do ESP8266
+- Ferramentas → Placa → **ESP32 Dev Module**
+- Instalar bibliotecas:
+  - **DHT sensor library**
+  - **ThingSpeak**
+  - **ESP32 Board Package**
 
-Função/Observações
+------------------------------------------------------------
 
-Configuração no Código
+### 2. Guia de Conexão (Fiação)
 
-DHT22
+| Componente | Pino do Componente | GPIO no ESP32 | Observações |
+|------------|---------------------|---------------|-------------|
+| **DHT22** | Data | **GPIO 4** | Leitura digital da temperatura |
+| **LDR** | Sinal | **GPIO 34** | Leitura analógica (ADC) |
+| **Ambos** | VCC | **3.3V** | Alimentação |
+| **Ambos** | GND | **GND** | Aterramento |
 
-Dados (Data)
+*Obs.: O LDR requer um divisor de tensão com resistor.*
 
-D2 (GPIO4)
+------------------------------------------------------------
 
-Leitura Digital de T/U
+## 🌐 Configuração do Código  
+Arquivo: **thingspeak_t_l_esp32_final.ino**
 
-#define DHTPIN D2
+Configure antes de enviar para o ESP32:
 
-LDR
+| Variável | Função |
+|----------|--------|
+| `ssid` | Nome do Wi-Fi |
+| `password` | Senha do Wi-Fi |
+| `myChannelNumber` | ID do canal: **3071812** |
+| `myWriteAPIKey` | Write API Key: **DU7P3RJKEKMI7OLX** |
 
-Sinal Analógico (Resistor Divisor)
+------------------------------------------------------------
 
-A0 (Analógico)
+## 📊 Campos no ThingSpeak
 
-Leitura Analógica de Luminosidade ($0-1023$)
+| Field | Conteúdo |
+|-------|-----------|
+| **Field 1** | Temperatura (°C) |
+| **Field 2** | Luminosidade (ADC 0–4095) |
 
-#define LDRPIN A0
-
-Ambos
-
-VCC
-
-3.3V
-
-Alimentação Elétrica
-
-
-
-Ambos
-
-GND
-
-GND
-
-Aterramento
-
-
-
-📝 Observação Importante
-
-O pino D2 no ESP8266 corresponde ao GPIO4 no chip. As bibliotecas modernas do Arduino IDE para ESP8266 permitem que você use a notação D2 diretamente no código, como está definido em thingspeak_uploader.ino.
+------------------------------------------------------------
